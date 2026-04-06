@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devolução | G.E. Aimoré 01/MG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        if (localStorage.getItem('aimore-theme') === 'light') {
+            document.documentElement.classList.add('light-mode');
+        }
+    </script>
+
+    <style>
+        /* DESIGN SYSTEM GLOBAL */
+        :root {
+            --bg-fundo: #050a1f;
+            --bg-card: #0e1633;
+            --bg-header: #0e1633;
+            --bg-input: #1a244d;
+            --azul-aimore: #1a2857;
+            --amarelo-corda: #ffde00;
+            --branco: #ffffff;
+            --texto-principal: #ffffff;
+            --texto-apoio: #a0aec0;
+            --sucesso: #118742;
+            --erro: #e74c3c;
+            --aviso: #f39c12;
+            --borda: rgba(255, 255, 255, 0.05);
+            --sombra: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        html.light-mode {
+            --bg-fundo: #f4f6f8;
+            --bg-card: #ffffff;
+            --bg-header: #ffffff;
+            --bg-input: #f0f2f5;
+            --texto-principal: #1a2857;
+            --texto-apoio: #4a5568;
+            --borda: rgba(26, 40, 87, 0.1);
+            --sombra: 0 4px 15px rgba(26, 40, 87, 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        
+        body { 
+            background-color: var(--bg-fundo); 
+            color: var(--texto-principal); 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease;
+        }
+
+        /* HEADER */
+        header { 
+            background: var(--bg-header); 
+            padding: 15px 20px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            border-bottom: 2px solid var(--amarelo-corda); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            transition: background-color 0.3s ease;
+        }
+        
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .btn-voltar { background: transparent; border: 1px solid var(--texto-apoio); color: var(--texto-apoio); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; text-decoration: none; transition: 0.3s; }
+        .btn-voltar:hover { border-color: var(--amarelo-corda); color: var(--amarelo-corda); }
+        .header-title { font-size: 1.1rem; font-weight: 700; color: var(--texto-principal); }
+        
+        .btn-theme { background: transparent; border: 1px solid var(--texto-apoio); color: var(--texto-apoio); border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; }
+        .btn-theme:hover { border-color: var(--amarelo-corda); color: var(--amarelo-corda); }
+
+        /* CONTEÚDO PRINCIPAL */
+        .container { max-width: 500px; margin: 0 auto; padding: 30px 20px; width: 100%; display: flex; flex-direction: column; flex-grow: 1; }
+        
+        /* INFO DO MATERIAL */
+        .item-info-box { text-align: center; margin-bottom: 25px; }
+        .item-info-box h2 { font-size: 1.4rem; color: var(--texto-principal); margin-bottom: 5px; font-weight: 700; }
+        .item-info-box p { color: var(--amarelo-corda); font-size: 0.9rem; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; }
+        .instrucao { font-size: 0.85rem; color: var(--texto-apoio); background: var(--bg-card); padding: 10px 15px; border-radius: 8px; border: 1px solid var(--borda); display: inline-block;}
+
+        /* ÁREA DA CÂMERA/FOTO */
+        .camera-wrapper { 
+            width: 100%; 
+            aspect-ratio: 3/4; 
+            background: var(--bg-card); 
+            border-radius: 20px; 
+            overflow: hidden; 
+            position: relative; 
+            box-shadow: var(--sombra);
+            border: 2px solid var(--borda);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .camera-fallback-msg {
+            color: var(--texto-apoio);
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 20px;
+            position: absolute;
+            z-index: 1;
+        }
+
+        #video, #canvas-preview { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            z-index: 2;
+        }
+
+        /* BOTÕES DE AÇÃO */
+        .actions-group { display: flex; flex-direction: column; gap: 12px; margin-top: auto; }
+        
+        .btn-row { display: flex; gap: 10px; width: 100%; }
+        
+        .btn-acao { 
+            flex: 1;
+            padding: 16px; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: 700; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-capturar { background: var(--texto-principal); color: var(--bg-fundo); }
+        .btn-capturar:hover { transform: translateY(-2px); box-shadow: var(--sombra); }
+
+        .btn-upload { background: transparent; border: 2px solid var(--texto-apoio); color: var(--texto-principal); }
+        .btn-upload:hover { border-color: var(--amarelo-corda); color: var(--amarelo-corda); }
+
+        .btn-confirmar { background: var(--amarelo-corda); color: #1a2857; display: none; box-shadow: 0 4px 15px rgba(255, 222, 0, 0.2); width: 100%; }
+        .btn-confirmar:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 222, 0, 0.3); }
+
+        .btn-refazer { background: transparent; border: 2px solid var(--texto-apoio); color: var(--texto-apoio); display: none; width: 100%; }
+        .btn-refazer:hover { border-color: var(--texto-principal); color: var(--texto-principal); }
+
+        .btn-acao:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+        /* TOASTS */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { padding: 15px 20px; border-radius: 10px; color: white; font-weight: 600; box-shadow: 0 5px 15px rgba(0,0,0,0.4); transform: translateX(120%); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px; min-width: 250px;}
+    </style>
+</head>
+<body>
+
+    <div id="toast-container"></div>
+
+    <header>
+        <div class="header-left">
+            <a href="minhas_reservas.html" class="btn-voltar">❮</a>
+            <span class="header-title">Devolução</span>
+        </div>
+        <button class="btn-theme" id="theme-btn" onclick="toggleTheme()">☀️</button>
+    </header>
+
+    <main class="container">
+        
+        <div class="item-info-box">
+            <h2 id="nomeItemTxt">Carregando...</h2>
+            <p id="codigoItemTxt">Nº --</p>
+            <div class="instrucao">📸 Envie uma foto provando que o item está inteiro e limpo.</div>
+        </div>
+
+        <div class="camera-wrapper">
+            <div class="camera-fallback-msg">Câmera desativada ou aguardando foto da galeria.</div>
+            <video id="video" autoplay playsinline></video>
+            <canvas id="canvas-preview" style="display: none;"></canvas>
+        </div>
+
+        <div class="actions-group">
+            
+            <input type="file" id="foto-upload" accept="image/*" style="display: none;">
+
+            <div class="btn-row" id="group-initial">
+                <button class="btn-acao btn-capturar" onclick="tirarFoto()">
+                    <span>📷</span> Câmera
+                </button>
+                <button class="btn-acao btn-upload" onclick="document.getElementById('foto-upload').click()">
+                    <span>📁</span> Galeria
+                </button>
+            </div>
+            
+            <button class="btn-acao btn-confirmar" id="btnConfirmar" onclick="enviarDevolucao()">
+                <span>✅</span> Enviar Devolução
+            </button>
+            <button class="btn-acao btn-refazer" id="btnRefazer" onclick="resetarCamera()">
+                <span>🔄</span> Escolher Outra
+            </button>
+
+        </div>
+
+    </main>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzNArci0LKqRf7xfGpaQasDdwUgzZsMCkinTYrXjgsqGRDrfV-gZf9WirBDx4c-5yY/exec';
+        
+        // Elementos
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas-preview');
+        const groupInitial = document.getElementById('group-initial');
+        const btnConfirmar = document.getElementById('btnConfirmar');
+        const btnRefazer = document.getElementById('btnRefazer');
+        const fotoUpload = document.getElementById('foto-upload');
+        
+        let streamOriginal = null;
+        let fotoBase64 = null;
+
+        // Pegar dados da URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const itemName = urlParams.get('item');
+        const codigo = urlParams.get('codigo');
+
+        // GESTÃO DE TEMAS
+        if (document.documentElement.classList.contains('light-mode')) {
+            document.getElementById('theme-btn').innerText = '🌙';
+        } else {
+            document.getElementById('theme-btn').innerText = '☀️';
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.getElementById('theme-btn');
+            
+            if (html.classList.contains('light-mode')) {
+                html.classList.remove('light-mode');
+                btn.innerText = '☀️';
+                localStorage.setItem('aimore-theme', 'dark');
+            } else {
+                html.classList.add('light-mode');
+                btn.innerText = '🌙';
+                localStorage.setItem('aimore-theme', 'light');
+            }
+        }
+
+        // TOAST NOTIFICATIONS
+        function showToast(msg, tipo = 'sucesso') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const cores = { sucesso: 'var(--sucesso)', erro: 'var(--erro)', aviso: 'var(--aviso)' };
+            const icones = { sucesso: '✅', erro: '❌', aviso: '⚠️' };
+            
+            toast.className = 'toast';
+            toast.style.background = cores[tipo];
+            toast.innerHTML = `<span>${icones[tipo]}</span> ${msg}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.style.transform = 'translateX(0)', 10);
+            setTimeout(() => { toast.style.transform = 'translateX(130%)'; setTimeout(() => toast.remove(), 300); }, 3500);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const registroLogado = localStorage.getItem('userName');
+            if (!registroLogado) { window.location.href = 'index.html'; return; }
+            
+            if (itemName && codigo) {
+                document.getElementById('nomeItemTxt').innerText = itemName;
+                document.getElementById('codigoItemTxt').innerText = `Nº ${codigo}`;
+            } else {
+                showToast("Erro ao carregar dados do item.", "erro");
+            }
+
+            iniciarCamera();
+        });
+
+        // ==========================================
+        // FLUXO 1: CÂMERA AO VIVO
+        // ==========================================
+        function iniciarCamera() {
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                .then(stream => {
+                    streamOriginal = stream;
+                    video.srcObject = stream;
+                    video.style.display = 'block';
+                })
+                .catch(err => {
+                    console.log("Câmera indisponível no momento", err);
+                    video.style.display = 'none'; // Cai pro fallback da galeria
+                });
+        }
+
+        function tirarFoto() {
+            if (!streamOriginal) {
+                return showToast("Câmera não permitida. Use o botão da Galeria.", "aviso");
+            }
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            fotoBase64 = canvas.toDataURL('image/jpeg', 0.8);
+            atualizarTelaPosUpload();
+        }
+
+        // ==========================================
+        // FLUXO 2: UPLOAD DA GALERIA
+        // ==========================================
+        fotoUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    // Ajusta o canvas para o tamanho da imagem carregada
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    fotoBase64 = canvas.toDataURL('image/jpeg', 0.8);
+                    atualizarTelaPosUpload();
+                }
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(file);
+        });
+
+        // ==========================================
+        // MUDANÇAS DE ESTADO (UI)
+        // ==========================================
+        function atualizarTelaPosUpload() {
+            video.style.display = 'none';
+            canvas.style.display = 'block';
+            
+            groupInitial.style.display = 'none';
+            btnConfirmar.style.display = 'flex';
+            btnRefazer.style.display = 'flex';
+        }
+
+        function resetarCamera() {
+            fotoBase64 = null;
+            fotoUpload.value = ''; // Limpa o input file
+            
+            canvas.style.display = 'none';
+            if (streamOriginal) video.style.display = 'block';
+            
+            groupInitial.style.display = 'flex';
+            btnConfirmar.style.display = 'none';
+            btnRefazer.style.display = 'none';
+        }
+
+        // ==========================================
+        // ENVIO PARA O SERVIDOR
+        // ==========================================
+        function enviarDevolucao() {
+            if(!fotoBase64) return;
+            
+            btnConfirmar.innerHTML = "<span>⏳</span> Enviando... Aguarde";
+            btnConfirmar.disabled = true;
+            btnRefazer.disabled = true;
+            showToast("Sua foto está sendo processada...", "aviso");
+
+            const userName = localStorage.getItem('userName');
+            
+            const payload = {
+                action: 'devolver',
+                imageData: fotoBase64,
+                userName: userName,
+                itemName: itemName,
+                codigo: codigo
+            };
+
+            fetch(scriptURL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'sucesso') {
+                    if(streamOriginal) streamOriginal.getTracks().forEach(track => track.stop());
+                    showToast("Material devolvido com sucesso!", "sucesso");
+                    setTimeout(() => { window.location.href = 'minhas_reservas.html'; }, 2000);
+                } else {
+                    showToast(data.detalhe, "erro");
+                    btnConfirmar.innerHTML = "<span>✅</span> Tentar Novamente";
+                    btnConfirmar.disabled = false;
+                    btnRefazer.disabled = false;
+                }
+            })
+            .catch(() => {
+                showToast("Erro ao comunicar com o servidor.", "erro");
+                btnConfirmar.innerHTML = "<span>✅</span> Tentar Novamente";
+                btnConfirmar.disabled = false;
+                btnRefazer.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>

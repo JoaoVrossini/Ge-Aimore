@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso | G.E. Aimoré 01/MG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* DESIGN SYSTEM - G.E. AIMORÉ */
+        :root {
+            /* MODO ESCURO (Padrão) */
+            --bg-fundo: #050a1f;
+            --bg-card: #0e1633;
+            --bg-input: #1a244d;
+            --azul-aimore: #1a2857;
+            --amarelo-corda: #ffde00;
+            --branco: #ffffff;
+            --texto-principal: #ffffff;
+            --texto-apoio: #a0aec0;
+            --sucesso: #118742;
+            --erro: #e74c3c;
+            --aviso: #f39c12;
+            --sombra: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        body.light-mode {
+            /* MODO CLARO */
+            --bg-fundo: #f4f6f8;
+            --bg-card: #ffffff;
+            --bg-input: #f0f2f5;
+            --texto-principal: #1a2857;
+            --texto-apoio: #4a5568;
+            --sombra: 0 4px 15px rgba(26, 40, 87, 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        
+        body { 
+            background-color: var(--bg-fundo); 
+            color: var(--texto-principal); 
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        /* HEADER / THEME TOGGLE */
+        .theme-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--amarelo-corda);
+            color: var(--amarelo-corda);
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: var(--sombra);
+            z-index: 1000;
+        }
+
+        /* CAIXA DE AUTENTICAÇÃO */
+        .auth-box { 
+            background: var(--bg-card); 
+            padding: 40px 30px; 
+            border-radius: 24px; 
+            width: 100%; 
+            max-width: 450px; 
+            border-top: 6px solid var(--amarelo-corda); 
+            box-shadow: var(--sombra);
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .auth-box .logo-placeholder {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .auth-box h2 { color: var(--texto-principal); font-size: 1.8rem; font-weight: 700; }
+        .auth-box p.subtitle { color: var(--texto-apoio); margin-bottom: 30px; font-size: 0.9rem; }
+
+        /* FORMULÁRIOS */
+        .input-group { margin-bottom: 18px; text-align: left; }
+        .input-group label { display: block; font-size: 0.85rem; color: var(--texto-apoio); margin-bottom: 6px; font-weight: 500; }
+        .input-group input { 
+            width: 100%; 
+            padding: 14px; 
+            border-radius: 12px; 
+            border: 2px solid transparent; 
+            background: var(--bg-input); 
+            color: var(--texto-principal); 
+            outline: none; 
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+        .input-group input:focus { border-color: var(--amarelo-corda); }
+
+        .btn-submit { 
+            width: 100%; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 12px; 
+            background: var(--amarelo-corda); 
+            color: #1a2857; 
+            font-weight: 700; 
+            font-size: 1.1rem; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(255, 222, 0, 0.2);
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 222, 0, 0.3); }
+        .btn-submit:disabled { background: #555; color: #888; cursor: not-allowed; transform: none; }
+
+        .toggle-text { margin-top: 25px; text-align: center; font-size: 0.85rem; color: var(--texto-apoio); }
+        .toggle-text a { color: var(--amarelo-corda); cursor: pointer; text-decoration: none; font-weight: 700; margin-left: 5px; }
+        .toggle-text a:hover { text-decoration: underline; }
+
+        .form-section { display: none; }
+        .form-section.active { display: block; animation: slideUp 0.4s ease; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* SISTEMA DE TOASTS */
+        #toast-container { position: fixed; top: 25px; right: 25px; z-index: 9999; display: flex; flex-direction: column; gap: 12px; }
+        .toast { 
+            padding: 16px 24px; 
+            border-radius: 12px; 
+            color: white; 
+            font-weight: 600; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3); 
+            transform: translateX(130%); 
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            min-width: 280px;
+        }
+    </style>
+</head>
+<body>
+
+    <button class="theme-switch" id="theme-btn" onclick="toggleTheme()">🌙</button>
+
+    <div id="toast-container"></div>
+
+    <div class="auth-box">
+        <div class="logo-placeholder">⚜️</div>
+        <h2>Sempre Alerta</h2>
+        <p class="subtitle">Portal G.E. Aimoré 01/MG</p>
+        
+        <div id="view-login" class="form-section active">
+            <form onsubmit="fazerLogin(event)">
+                <div class="input-group">
+                    <label>Registro Escoteiro (sem dígito)</label>
+                    <input type="text" id="login-registro" maxlength="8" pattern="\d{1,8}" placeholder="Ex: 123456" required>
+                </div>
+                <div class="input-group">
+                    <label>Senha</label>
+                    <input type="password" id="login-senha" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-submit" id="btn-login">Entrar no Portal</button>
+            </form>
+            <div class="toggle-text">
+                Novo na tropa? <a onclick="alternarTela('view-register')">Criar Conta</a>
+            </div>
+        </div>
+
+        <div id="view-register" class="form-section">
+            <form onsubmit="criarConta(event)">
+                <div class="input-group">
+                    <label>Registro Escoteiro (sem dígito)</label>
+                    <input type="text" id="reg-registro" maxlength="8" pattern="\d{1,8}" placeholder="Até 8 números" required>
+                </div>
+                
+                <div class="input-group">
+                    <label>Email Oficial</label>
+                    <input type="email" id="reg-email" placeholder="seu@email.com" required>
+                </div>
+
+                <div style="display: flex; gap: 12px;">
+                    <div class="input-group" style="flex: 1;">
+                        <label>Senha</label>
+                        <input type="password" id="reg-senha" required>
+                    </div>
+                    <div class="input-group" style="flex: 1;">
+                        <label>Confirmar</label>
+                        <input type="password" id="reg-senha-conf" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="btn-registrar">Cadastrar Membro</button>
+            </form>
+            <div class="toggle-text">
+                Já possui acesso? <a onclick="alternarTela('view-login')">Fazer Login</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzNArci0LKqRf7xfGpaQasDdwUgzZsMCkinTYrXjgsqGRDrfV-gZf9WirBDx4c-5yY/exec';
+
+        // GESTÃO DE TEMAS
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.getElementById('theme-btn');
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                btn.innerText = '🌙';
+                localStorage.setItem('aimore-theme', 'dark');
+            } else {
+                body.classList.add('light-mode');
+                btn.innerText = '☀️';
+                localStorage.setItem('aimore-theme', 'light');
+            }
+        }
+
+        // CARREGAR TEMA SALVO
+        if (localStorage.getItem('aimore-theme') === 'light') {
+            document.body.classList.add('light-mode');
+            document.getElementById('theme-btn').innerText = '☀️';
+        }
+
+        // NOTIFICAÇÕES TOAST
+        function showToast(msg, tipo = 'sucesso') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const cores = { 
+                sucesso: 'var(--sucesso)', 
+                erro: 'var(--erro)', 
+                aviso: 'var(--aviso)' 
+            };
+            const icones = { sucesso: '✅', erro: '❌', aviso: '⚠️' };
+            
+            toast.className = 'toast';
+            toast.style.background = cores[tipo];
+            toast.innerHTML = `<span>${icones[tipo]}</span> ${msg}`;
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.style.transform = 'translateX(0)', 10);
+            setTimeout(() => { 
+                toast.style.transform = 'translateX(130%)'; 
+                setTimeout(() => toast.remove(), 400); 
+            }, 3500);
+        }
+
+        function alternarTela(telaId) {
+            document.querySelectorAll('.form-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(telaId).classList.add('active');
+        }
+
+        function fazerLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('login-registro').value;
+            const pass = document.getElementById('login-senha').value;
+            const btn = document.getElementById('btn-login');
+            
+            btn.innerText = "Autenticando..."; btn.disabled = true;
+
+            fetch(scriptURL, { 
+                method: 'POST', 
+                body: JSON.stringify({action: 'login_user', registro: user, senha: pass}) 
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'sucesso') {
+                    localStorage.setItem('userRole', data.role);
+                    localStorage.setItem('userName', user); 
+                    window.location.href = 'hub.html';
+                } else { showToast(data.detalhe, 'erro'); }
+            })
+            .catch(() => showToast("Falha na conexão com o servidor.", 'erro'))
+            .finally(() => { btn.innerText = "Entrar no Portal"; btn.disabled = false; });
+        }
+
+        function criarConta(e) {
+            e.preventDefault();
+            const registro = document.getElementById('reg-registro').value;
+            const email = document.getElementById('reg-email').value;
+            const senha = document.getElementById('reg-senha').value;
+            const senhaConf = document.getElementById('reg-senha-conf').value;
+
+            if (senha !== senhaConf) return showToast("As senhas não conferem.", 'aviso');
+            if (senha.length < 6) return showToast("Senha muito curta (mín. 6).", 'aviso');
+
+            const btn = document.getElementById('btn-registrar');
+            btn.innerText = "Processando..."; btn.disabled = true;
+
+            fetch(scriptURL, { 
+                method: 'POST', 
+                body: JSON.stringify({action: 'register_user', registro: registro, email: email, senha: senha}) 
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'sucesso') {
+                    showToast("Conta criada com sucesso!", 'sucesso');
+                    alternarTela('view-login');
+                } else { showToast(data.detalhe, 'erro'); }
+            })
+            .catch(() => showToast("Erro ao criar conta.", 'erro'))
+            .finally(() => { btn.innerText = "Cadastrar Membro"; btn.disabled = false; });
+        }
+    </script>
+</body>
+</html>

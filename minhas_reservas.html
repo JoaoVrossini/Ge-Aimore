@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Reservas | G.E. Aimoré 01/MG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        if (localStorage.getItem('aimore-theme') === 'light') {
+            document.documentElement.classList.add('light-mode');
+        }
+    </script>
+
+    <style>
+        /* DESIGN SYSTEM GLOBAL */
+        :root {
+            --bg-fundo: #050a1f;
+            --bg-card: #0e1633;
+            --bg-header: #0e1633;
+            --bg-input: #1a244d;
+            --azul-aimore: #1a2857;
+            --amarelo-corda: #ffde00;
+            --branco: #ffffff;
+            --texto-principal: #ffffff;
+            --texto-apoio: #a0aec0;
+            --sucesso: #118742;
+            --erro: #e74c3c;
+            --aviso: #f39c12;
+            --borda: rgba(255, 255, 255, 0.05);
+            --sombra: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        html.light-mode {
+            --bg-fundo: #f4f6f8;
+            --bg-card: #ffffff;
+            --bg-header: #ffffff;
+            --bg-input: #f0f2f5;
+            --texto-principal: #1a2857;
+            --texto-apoio: #4a5568;
+            --borda: rgba(26, 40, 87, 0.1);
+            --sombra: 0 4px 15px rgba(26, 40, 87, 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        
+        body { 
+            background-color: var(--bg-fundo); 
+            color: var(--texto-principal); 
+            padding-bottom: 80px; 
+            transition: background-color 0.3s ease;
+        }
+
+        /* HEADER */
+        header { 
+            background: var(--bg-header); 
+            padding: 15px 20px; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            border-bottom: 2px solid var(--amarelo-corda); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            transition: background-color 0.3s ease;
+        }
+        
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-title { font-size: 1.1rem; font-weight: 700; color: var(--texto-principal); }
+        
+        .btn-theme { background: transparent; border: 1px solid var(--texto-apoio); color: var(--texto-apoio); border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; }
+        .btn-theme:hover { border-color: var(--amarelo-corda); color: var(--amarelo-corda); }
+
+        /* CONTEÚDO PRINCIPAL */
+        .container { max-width: 800px; margin: 20px auto; padding: 0 20px; }
+        
+        /* CARD DE RESERVA */
+        .reserva-card { 
+            background: var(--bg-card); 
+            border-radius: 16px; 
+            padding: 20px; 
+            margin-bottom: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            border: 1px solid var(--borda); 
+            box-shadow: var(--sombra);
+            transition: background-color 0.3s ease;
+        }
+        
+        .reserva-header { display: flex; gap: 15px; align-items: center; border-bottom: 1px solid var(--borda); padding-bottom: 15px; }
+        .reserva-header img { width: 70px; height: 70px; border-radius: 12px; object-fit: cover; background: var(--bg-input); }
+        
+        .reserva-info h3 { font-size: 1.1rem; color: var(--texto-principal); margin-bottom: 3px; font-weight: 700; }
+        .reserva-info span { font-size: 0.8rem; color: var(--amarelo-corda); font-weight: 700; text-transform: uppercase; }
+        
+        .reserva-datas { font-size: 0.85rem; color: var(--texto-apoio); display: flex; justify-content: space-between; }
+        .reserva-datas strong { color: var(--texto-principal); font-weight: 600; display: block; margin-top: 5px; font-size: 0.95rem; }
+        
+        .btn-acao { 
+            width: 100%; 
+            padding: 14px; 
+            border: none; 
+            border-radius: 12px; 
+            background: var(--amarelo-corda); 
+            color: #1a2857; 
+            font-weight: 700; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            text-align: center; 
+            text-decoration: none; 
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-acao:hover { filter: brightness(1.1); }
+
+        /* NAV MOBILE */
+        .nav-mobile { position: fixed; bottom: 0; width: 100%; background: var(--bg-header); display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; border-top: 1px solid var(--borda); box-shadow: 0 -4px 10px rgba(0,0,0,0.05); }
+        .nav-item { color: var(--texto-apoio); text-decoration: none; font-size: 0.8rem; text-align: center; cursor: pointer; font-weight: 500; transition: 0.3s; }
+        .nav-item span { display: block; font-size: 1.3rem; margin-bottom: 2px; }
+        .nav-item.active { color: var(--amarelo-corda); }
+
+        /* TOASTS */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { padding: 15px 20px; border-radius: 10px; color: white; font-weight: 600; box-shadow: 0 5px 15px rgba(0,0,0,0.4); transform: translateX(120%); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px; min-width: 250px; }
+    </style>
+</head>
+<body>
+
+    <div id="toast-container"></div>
+
+    <header>
+        <div class="header-left">
+            <span class="header-title">Minhas Reservas Ativas</span>
+        </div>
+        <button class="btn-theme" id="theme-btn" onclick="toggleTheme()">☀️</button>
+    </header>
+
+    <div class="container" id="lista-reservas">
+        <p style="text-align: center; color: var(--amarelo-corda); margin-top: 40px; font-weight: 500;">Buscando dados no servidor...</p>
+    </div>
+
+    <nav class="nav-mobile">
+        <a href="inventario.html" class="nav-item"><span>📦</span>Itens</a>
+        <a href="minhas_reservas.html" class="nav-item active"><span>📅</span>Reservas</a>
+        <a href="hub.html" class="nav-item"><span>🏠</span>Início</a>
+    </nav>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzNArci0LKqRf7xfGpaQasDdwUgzZsMCkinTYrXjgsqGRDrfV-gZf9WirBDx4c-5yY/exec';
+
+        // GESTÃO DE TEMAS
+        if (document.documentElement.classList.contains('light-mode')) {
+            document.getElementById('theme-btn').innerText = '🌙';
+        } else {
+            document.getElementById('theme-btn').innerText = '☀️';
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.getElementById('theme-btn');
+            
+            if (html.classList.contains('light-mode')) {
+                html.classList.remove('light-mode');
+                btn.innerText = '☀️';
+                localStorage.setItem('aimore-theme', 'dark');
+            } else {
+                html.classList.add('light-mode');
+                btn.innerText = '🌙';
+                localStorage.setItem('aimore-theme', 'light');
+            }
+        }
+
+        // SISTEMA DE TOASTS
+        function showToast(msg, tipo = 'sucesso') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const cores = { sucesso: 'var(--sucesso)', erro: 'var(--erro)', aviso: 'var(--aviso)' };
+            const icones = { sucesso: '✅', erro: '❌', aviso: '⚠️' };
+            
+            toast.className = 'toast';
+            toast.style.background = cores[tipo];
+            toast.innerHTML = `<span>${icones[tipo]}</span> ${msg}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.style.transform = 'translateX(0)', 10);
+            setTimeout(() => { toast.style.transform = 'translateX(130%)'; setTimeout(() => toast.remove(), 300); }, 3500);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const registroLogado = localStorage.getItem('userName');
+            if (!registroLogado) { window.location.href = 'index.html'; return; }
+            carregarReservas(registroLogado);
+        });
+
+        // Formata data do servidor
+        function formatarDataPadraoBr(dataString) {
+            if(!dataString) return '--';
+            const partes = dataString.split('T')[0].split('-'); 
+            if(partes.length === 3) {
+                return `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+            return dataString;
+        }
+
+        function carregarReservas(registro) {
+            const container = document.getElementById('lista-reservas');
+            
+            fetch(`${scriptURL}?action=get_minhas_reservas&usuario=${registro}`)
+                .then(response => response.json())
+                .then(data => {
+                    container.innerHTML = '';
+                    if (data.length === 0) {
+                        container.innerHTML = `
+                            <div style="text-align: center; margin-top: 60px;">
+                                <span style="font-size: 3.5rem; display:block; margin-bottom:15px; filter: grayscale(1);">⛺</span>
+                                <h3 style="color: var(--texto-principal); font-size: 1.2rem; margin-bottom:5px;">Tudo limpo!</h3>
+                                <p style="color: var(--texto-apoio); font-size: 0.9rem;">Nenhum material sob sua responsabilidade.</p>
+                            </div>`;
+                        return;
+                    }
+
+                    data.forEach(reserva => {
+                        const dataRet = formatarDataPadraoBr(reserva.retirada);
+                        const dataDev = formatarDataPadraoBr(reserva.devolucao);
+                        const urlDevolucao = `devolucao.html?item=${encodeURIComponent(reserva.nome)}&codigo=${encodeURIComponent(reserva.codigo)}`;
+
+                        const card = `
+                            <div class="reserva-card">
+                                <div class="reserva-header">
+                                    <img src="${reserva.foto}" alt="${reserva.nome}" onerror="this.src='https://via.placeholder.com/70?text=Sem+Foto'">
+                                    <div class="reserva-info">
+                                        <span>Nº ${reserva.codigo}</span>
+                                        <h3>${reserva.nome}</h3>
+                                    </div>
+                                </div>
+                                <div class="reserva-datas">
+                                    <div>Retirada: <strong>${dataRet}</strong></div>
+                                    <div style="text-align: right;">Devolução: <strong>${dataDev}</strong></div>
+                                </div>
+                                <a href="${urlDevolucao}" class="btn-acao"><span>📸</span> Fazer Devolução</a>
+                            </div>
+                        `;
+                        container.insertAdjacentHTML('beforeend', card);
+                    });
+                })
+                .catch(() => { 
+                    container.innerHTML = '';
+                    showToast("Erro de conexão ao buscar reservas.", "erro"); 
+                });
+        }
+    </script>
+</body>
+</html>

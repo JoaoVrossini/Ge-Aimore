@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventário | G.E. Aimoré 01/MG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        if (localStorage.getItem('aimore-theme') === 'light') {
+            document.documentElement.classList.add('light-mode');
+        }
+    </script>
+
+    <style>
+        /* DESIGN SYSTEM GLOBAL */
+        :root {
+            --bg-fundo: #050a1f;
+            --bg-card: #0e1633;
+            --bg-header: #0e1633;
+            --bg-input: #1a244d;
+            --azul-aimore: #1a2857;
+            --amarelo-corda: #ffde00;
+            --branco: #ffffff;
+            --texto-principal: #ffffff;
+            --texto-apoio: #a0aec0;
+            --sucesso: #118742;
+            --sucesso-bg: rgba(17, 135, 66, 0.2);
+            --erro: #e74c3c;
+            --erro-bg: rgba(231, 76, 60, 0.1);
+            --aviso: #f39c12;
+            --borda: rgba(255, 255, 255, 0.05);
+            --sombra: 0 10px 30px rgba(0,0,0,0.5);
+            --overlay: rgba(0, 0, 0, 0.8);
+        }
+
+        html.light-mode {
+            --bg-fundo: #f4f6f8;
+            --bg-card: #ffffff;
+            --bg-header: #ffffff;
+            --bg-input: #f0f2f5;
+            --texto-principal: #1a2857;
+            --texto-apoio: #4a5568;
+            --sucesso: #0d6b34;
+            --sucesso-bg: rgba(17, 135, 66, 0.15);
+            --borda: rgba(26, 40, 87, 0.1);
+            --sombra: 0 4px 15px rgba(26, 40, 87, 0.1);
+            --overlay: rgba(0, 0, 0, 0.5);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        
+        body { 
+            background-color: var(--bg-fundo); 
+            color: var(--texto-principal); 
+            padding-bottom: 80px; 
+            transition: background-color 0.3s ease;
+        }
+        
+        /* HEADER */
+        header { 
+            background: var(--bg-header); 
+            padding: 15px 20px; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            display: flex; 
+            gap: 10px; 
+            align-items: center; 
+            border-bottom: 2px solid var(--amarelo-corda);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease;
+        }
+        
+        header input { 
+            flex: 1; 
+            padding: 12px 15px; 
+            border-radius: 10px; 
+            border: 1px solid var(--borda); 
+            background: var(--bg-input); 
+            color: var(--texto-principal); 
+            outline: none; 
+            transition: 0.3s;
+        }
+        header input:focus { border-color: var(--amarelo-corda); }
+
+        .btn-gerenciar, .btn-theme { 
+            background: transparent; 
+            border: 1px solid var(--texto-apoio); 
+            color: var(--texto-apoio); 
+            padding: 10px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+        .btn-gerenciar { display: none; } /* Só aparece para admin */
+        .btn-gerenciar:hover, .btn-theme:hover { border-color: var(--amarelo-corda); color: var(--amarelo-corda); }
+        
+        /* CONTEÚDO */
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+        .page-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; color: var(--texto-principal); }
+        
+        .grid-materiais { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 600px) { .grid-materiais { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1024px) { .grid-materiais { grid-template-columns: repeat(4, 1fr); } }
+        
+        /* CARD DO ITEM */
+        .card-item { 
+            background: var(--bg-card); 
+            border-radius: 18px; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            border: 1px solid var(--borda);
+            box-shadow: var(--sombra);
+            transition: 0.3s;
+        }
+        .card-item:hover { transform: translateY(-3px); border-color: var(--amarelo-corda); }
+        
+        .item-img { width: 100%; height: 180px; background: var(--bg-input); object-fit: cover; }
+        .item-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .item-numero { font-size: 0.8rem; color: var(--amarelo-corda); font-weight: 800; text-transform: uppercase; }
+        .item-nome { font-size: 1.2rem; font-weight: 700; margin: 5px 0 10px 0; color: var(--texto-principal); }
+        
+        .status-badge { 
+            display: inline-block; 
+            padding: 4px 12px; 
+            border-radius: 6px; 
+            font-size: 0.75rem; 
+            font-weight: 700; 
+            margin-bottom: 20px; 
+            width: fit-content; 
+            background: var(--sucesso-bg); 
+            color: var(--sucesso); 
+        }
+        
+        /* BOTÕES DO CARD */
+        .btn-reservar { 
+            width: 100%; 
+            padding: 14px; 
+            border: none; 
+            border-radius: 12px; 
+            background: var(--amarelo-corda); 
+            color: #1a2857; 
+            font-weight: 700; 
+            font-size: 1rem;
+            cursor: pointer; 
+            margin-top: auto; 
+            transition: 0.3s;
+        }
+        .btn-reservar:hover { filter: brightness(1.1); }
+
+        .btn-remover { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid var(--erro); 
+            border-radius: 12px; 
+            background: var(--erro-bg); 
+            color: var(--erro); 
+            font-weight: 600; 
+            cursor: pointer; 
+            margin-top: 10px; 
+            transition: 0.3s;
+        }
+        .btn-remover:hover { background: var(--erro); color: white; }
+        
+        /* FAB ADICIONAR */
+        .fab-adicionar { 
+            position: fixed; 
+            bottom: 90px; 
+            right: 20px; 
+            width: 60px; 
+            height: 60px; 
+            border-radius: 50%; 
+            background: var(--amarelo-corda); 
+            color: #1a2857; 
+            font-size: 2rem; 
+            font-weight: bold; 
+            border: none; 
+            cursor: pointer; 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(255, 222, 0, 0.4);
+            transition: 0.3s;
+        }
+        .fab-adicionar:hover { transform: scale(1.05); }
+        
+        /* MODAIS */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--overlay); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
+        .modal-box { background: var(--bg-card); padding: 30px; border-radius: 20px; width: 100%; max-width: 480px; max-height: 85vh; overflow-y: auto; border-top: 5px solid var(--amarelo-corda); box-shadow: var(--sombra); }
+        .modal-box h3 { color: var(--texto-principal); margin-bottom: 10px; font-size: 1.4rem; }
+        
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 0.85rem; color: var(--texto-apoio); margin-bottom: 5px; font-weight: 500; }
+        .input-group input, .input-group select { 
+            width: 100%; 
+            padding: 14px; 
+            border-radius: 10px; 
+            border: 1px solid var(--borda); 
+            background: var(--bg-input); 
+            color: var(--texto-principal); 
+            outline: none;
+        }
+        .input-group input[type="file"] { padding: 10px; }
+        
+        /* LISTA E PESQUISA NO MODAL DE USUÁRIOS */
+        .search-users-input { margin-bottom: 20px; width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--borda); background: var(--bg-input); color: var(--texto-principal); outline: none; transition: 0.3s; }
+        .search-users-input:focus { border-color: var(--amarelo-corda); }
+
+        .user-list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--borda); }
+        
+        .btn-salvar-modal { width: 100%; padding: 14px; background: var(--amarelo-corda); color: #1a2857; font-weight: 700; border: none; border-radius: 10px; cursor: pointer; margin-top: 15px; font-size: 1rem; }
+        .btn-cancelar-modal { width: 100%; padding: 14px; background: transparent; color: var(--texto-apoio); border: 1px solid var(--texto-apoio); border-radius: 10px; cursor: pointer; margin-top: 10px; font-weight: 600; }
+
+        /* NAV MOBILE */
+        .nav-mobile { position: fixed; bottom: 0; width: 100%; background: var(--bg-header); display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; border-top: 1px solid var(--borda); box-shadow: 0 -4px 10px rgba(0,0,0,0.05); }
+        .nav-item { color: var(--texto-apoio); text-decoration: none; font-size: 0.8rem; text-align: center; cursor: pointer; font-weight: 500; transition: 0.3s; }
+        .nav-item span { display: block; font-size: 1.3rem; margin-bottom: 2px; }
+        .nav-item.active { color: var(--amarelo-corda); }
+
+        /* TOASTS */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { padding: 15px 20px; border-radius: 10px; color: white; font-weight: 600; box-shadow: 0 5px 15px rgba(0,0,0,0.4); transform: translateX(120%); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px; min-width: 250px; }
+    </style>
+</head>
+<body>
+
+    <div id="toast-container"></div>
+
+    <header>
+        <input type="text" id="busca" placeholder="🔍 Pesquisar material..." onkeyup="filtrarMateriais()">
+        <button class="btn-theme" id="theme-btn" onclick="toggleTheme()">☀️</button>
+        <button class="btn-gerenciar" id="btnAdmin" onclick="abrirModalUsers()" title="Gerenciar Tropa">⚙️</button>
+    </header>
+
+    <main class="container">
+        <h2 class="page-title">Almoxarifado</h2>
+        <div class="grid-materiais" id="inventario-grid">
+            </div>
+    </main>
+
+    <button class="fab-adicionar" id="btnAdicionar" onclick="abrirModalAdd()">+</button>
+
+    <div class="modal-overlay" id="modalAdd">
+        <div class="modal-box">
+            <h3>Cadastrar Material</h3>
+            <form onsubmit="salvarMaterial(event)">
+                <div class="input-group">
+                    <label>Nome do Item</label>
+                    <input type="text" id="novoNome" placeholder="Ex: Lampião a Gás" required>
+                </div>
+                <div class="input-group">
+                    <label>Foto do Material</label>
+                    <input type="file" id="novaFotoFile" accept="image/*" required>
+                </div>
+                <button type="submit" class="btn-salvar-modal">Salvar no Almoxarifado</button>
+                <button type="button" class="btn-cancelar-modal" onclick="document.getElementById('modalAdd').style.display='none'">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalUsers">
+        <div class="modal-box">
+            <h3>Gerenciar Tropa</h3>
+            <p style="font-size: 0.8rem; color: var(--texto-apoio); margin-bottom: 20px;">Altere os níveis de permissão dos membros da tropa.</p>
+            
+            <input type="text" id="buscaUsuario" class="search-users-input" placeholder="🔍 Buscar por registro ou email..." onkeyup="filtrarUsuarios()">
+
+            <div id="lista-usuarios">Carregando membros...</div>
+            <button type="button" class="btn-cancelar-modal" style="margin-top: 20px;" onclick="document.getElementById('modalUsers').style.display='none'">Fechar Painel</button>
+        </div>
+    </div>
+
+    <nav class="nav-mobile">
+        <a href="inventario.html" class="nav-item active"><span>📦</span>Itens</a>
+        <a href="minhas_reservas.html" class="nav-item"><span>📅</span>Reservas</a>
+        <a href="hub.html" class="nav-item"><span>🏠</span>Início</a>
+    </nav>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzNArci0LKqRf7xfGpaQasDdwUgzZsMCkinTYrXjgsqGRDrfV-gZf9WirBDx4c-5yY/exec';
+        const role = localStorage.getItem('userRole'); 
+
+        // GESTÃO DE TEMAS
+        if (document.documentElement.classList.contains('light-mode')) {
+            document.getElementById('theme-btn').innerText = '🌙';
+        } else {
+            document.getElementById('theme-btn').innerText = '☀️';
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.getElementById('theme-btn');
+            
+            if (html.classList.contains('light-mode')) {
+                html.classList.remove('light-mode');
+                btn.innerText = '☀️';
+                localStorage.setItem('aimore-theme', 'dark');
+            } else {
+                html.classList.add('light-mode');
+                btn.innerText = '🌙';
+                localStorage.setItem('aimore-theme', 'light');
+            }
+        }
+
+        function showToast(msg, tipo = 'sucesso') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const cores = { sucesso: 'var(--sucesso)', erro: 'var(--erro)', aviso: 'var(--aviso)' };
+            const icones = { sucesso: '✅', erro: '❌', aviso: '⚠️' };
+            
+            toast.className = 'toast';
+            toast.style.background = cores[tipo];
+            toast.innerHTML = `<span>${icones[tipo]}</span> ${msg}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.style.transform = 'translateX(0)', 10);
+            setTimeout(() => { toast.style.transform = 'translateX(130%)'; setTimeout(() => toast.remove(), 300); }, 3500);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!role) { window.location.href = 'index.html'; return; }
+
+            // Lógica de Permissões Visuais
+            if (role === 'admin') {
+                document.getElementById('btnAdicionar').style.display = 'flex';
+                document.getElementById('btnAdmin').style.display = 'flex';
+            } else if (role === 'patrimonio') {
+                document.getElementById('btnAdicionar').style.display = 'flex';
+            }
+            carregarMateriais();
+        });
+
+        function carregarMateriais() {
+            const grid = document.getElementById('inventario-grid');
+            grid.innerHTML = '<p style="color: var(--amarelo-corda); text-align: center; padding: 20px;">Carregando materiais...</p>';
+
+            fetch(scriptURL)
+                .then(res => res.json())
+                .then(data => {
+                    grid.innerHTML = ''; 
+                    if(data.length === 0) {
+                        grid.innerHTML = '<p style="color: var(--texto-apoio); text-align: center; padding: 20px;">Nenhum item cadastrado no almoxarifado.</p>';
+                        return;
+                    }
+
+                    data.forEach(item => {
+                        let btnExcluir = '';
+                        if (role === 'admin' || role === 'patrimonio') {
+                            btnExcluir = `<button class="btn-remover" onclick="removerItem('${item.codigo}')">🗑️ Excluir Material</button>`;
+                        }
+                        const card = `
+                            <div class="card-item" data-nome="${item.nome}" id="card-${item.codigo}">
+                                <img src="${item.foto}" class="item-img" onerror="this.src='https://via.placeholder.com/400x180?text=Sem+Foto'">
+                                <div class="item-info">
+                                    <span class="item-numero">Nº ${item.codigo}</span>
+                                    <h3 class="item-nome">${item.nome}</h3>
+                                    <span class="status-badge">● DISPONÍVEL</span>
+                                    <button class="btn-reservar" onclick="location.href='reserva.html?item=${item.codigo}'">Solicitar Retirada</button>
+                                    ${btnExcluir}
+                                </div>
+                            </div>
+                        `;
+                        grid.insertAdjacentHTML('beforeend', card);
+                    });
+                })
+                .catch(() => showToast("Erro ao carregar inventário.", "erro"));
+        }
+
+        // ========================== GESTÃO DE MATERIAIS ==========================
+        function abrirModalAdd() { document.getElementById('modalAdd').style.display = 'flex'; }
+        
+        function salvarMaterial(e) {
+            e.preventDefault();
+            const file = document.getElementById('novaFotoFile').files[0];
+            if(!file) return showToast("A foto é obrigatória.", "aviso");
+            
+            showToast("Fazendo upload da foto... aguarde.", "aviso");
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function() {
+                fetch(scriptURL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({action: 'cadastrar', nome: document.getElementById('novoNome').value, imageData: reader.result}) 
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.status === 'sucesso') { 
+                        showToast("Material adicionado!", "sucesso"); 
+                        document.getElementById('modalAdd').style.display = 'none'; 
+                        document.getElementById('novoNome').value = '';
+                        carregarMateriais(); 
+                    } else showToast(data.detalhe, "erro");
+                })
+                .catch(() => showToast("Erro de conexão.", "erro"));
+            }
+        }
+
+        function removerItem(codigo) {
+            if(confirm(`Excluir permanentemente o item Nº ${codigo}?`)) {
+                fetch(scriptURL, { method: 'POST', body: JSON.stringify({action: 'delete', codigo: codigo}) })
+                .then(() => { 
+                    document.getElementById(`card-${codigo}`).remove(); 
+                    showToast("Material excluído.", "sucesso"); 
+                })
+                .catch(() => showToast("Erro ao excluir.", "erro"));
+            }
+        }
+
+        function filtrarMateriais() {
+            let input = document.getElementById('busca').value.toLowerCase();
+            let cards = document.getElementsByClassName('card-item');
+            for (let i = 0; i < cards.length; i++) {
+                cards[i].style.display = cards[i].getAttribute('data-nome').toLowerCase().includes(input) ? "" : "none";
+            }
+        }
+
+        // ========================== GESTÃO DE USUÁRIOS ==========================
+        function abrirModalUsers() {
+            document.getElementById('modalUsers').style.display = 'flex';
+            document.getElementById('buscaUsuario').value = ''; // Limpa a busca ao abrir
+            const lista = document.getElementById('lista-usuarios');
+            lista.innerHTML = '<p style="color: var(--amarelo-corda);">Buscando membros...</p>';
+            
+            fetch(`${scriptURL}?action=get_users`)
+            .then(res => res.json())
+            .then(users => {
+                lista.innerHTML = '';
+                users.forEach(u => {
+                    const div = document.createElement('div');
+                    div.className = 'user-list-item';
+                    // Adiciona os atributos de busca
+                    div.setAttribute('data-busca', `${u.registro} ${u.email}`.toLowerCase());
+                    
+                    div.innerHTML = `
+                        <div style="line-height: 1.2;">
+                            <strong style="color: var(--texto-principal);">${u.registro}</strong><br>
+                            <span style="font-size:0.75rem; color: var(--texto-apoio);">${u.email}</span>
+                        </div>
+                        <select onchange="mudarCargo('${u.registro}', this.value)" style="width: 140px; padding: 8px; border-radius: 8px; background: var(--bg-input); color: var(--texto-principal); border: 1px solid var(--borda);">
+                            <option value="user" ${u.role === 'user' ? 'selected' : ''}>Escoteiro</option>
+                            <option value="patrimonio" ${u.role === 'patrimonio' ? 'selected' : ''}>Patrimônio</option>
+                            <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
+                        </select>
+                    `;
+                    lista.appendChild(div);
+                });
+            })
+            .catch(() => lista.innerHTML = '<p style="color: var(--erro);">Erro ao carregar lista.</p>');
+        }
+
+        function filtrarUsuarios() {
+            let input = document.getElementById('buscaUsuario').value.toLowerCase();
+            let items = document.getElementsByClassName('user-list-item');
+            
+            for (let i = 0; i < items.length; i++) {
+                let texto = items[i].getAttribute('data-busca');
+                // Alterna entre display original (flex) e esconder
+                items[i].style.display = texto.includes(input) ? "flex" : "none";
+            }
+        }
+
+        function mudarCargo(registroTarget, novoCargo) {
+            showToast("Alterando cargo...", "aviso");
+            fetch(scriptURL, { method: 'POST', body: JSON.stringify({action: 'change_role', targetRegistro: registroTarget, newRole: novoCargo}) })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'sucesso') showToast(`Cargo de ${registroTarget} atualizado!`, "sucesso");
+                else showToast(data.detalhe, "erro");
+            })
+            .catch(() => showToast("Erro de conexão.", "erro"));
+        }
+    </script>
+</body>
+</html>
