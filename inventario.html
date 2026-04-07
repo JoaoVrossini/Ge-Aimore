@@ -282,7 +282,7 @@
     </nav>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzwr5mH4kBpnSbvPAgTjHAC0MPAnejpGlIhOSDiCZrOiFq1GmVCR-Sw8prP7EXYx_o/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbytpxBSDoisT16SF7gNkkeFII2fyd9-KOHRoL5jCeIMG7CndEXztXSXsJCwhqzUNw/exec';
         const role = localStorage.getItem('userRole'); 
 
         // GESTÃO DE TEMAS
@@ -332,40 +332,34 @@
         });
 
         function carregarMateriais() {
-            const grid = document.getElementById('inventario-grid');
-            grid.innerHTML = '<p style="color: var(--amarelo-corda); text-align: center; padding: 20px;">Carregando materiais...</p>';
+        const grid = document.getElementById('inventario-grid');
+        grid.innerHTML = '<p style="color: var(--amarelo);">Carregando...</p>';
 
-            fetch(scriptURL)
-                .then(res => res.json())
-                .then(data => {
-                    grid.innerHTML = ''; 
-                    if(data.length === 0) {
-                        grid.innerHTML = '<p style="color: var(--texto-apoio); text-align: center; padding: 20px;">Nenhum item cadastrado no almoxarifado.</p>';
-                        return;
+        fetch(scriptURL)
+            .then(res => res.json())
+            .then(data => {
+                grid.innerHTML = ''; 
+                data.forEach(item => {
+                    let btnExcluir = '';
+                    if (role === 'admin' || role === 'patrimonio') {
+                        btnExcluir = `<button class="btn-remover" onclick="removerItem('${item.codigo}')">🗑️ Excluir</button>`;
                     }
-
-                    data.forEach(item => {
-                        let btnExcluir = '';
-                        if (role === 'admin' || role === 'patrimonio') {
-                            btnExcluir = `<button class="btn-remover" onclick="removerItem('${item.codigo}')">🗑️ Excluir Material</button>`;
-                        }
-                        const card = `
-                            <div class="card-item" data-nome="${item.nome}" id="card-${item.codigo}">
-                                <img src="${item.foto}" class="item-img" onerror="this.src='https://via.placeholder.com/400x180?text=Sem+Foto'">
-                                <div class="item-info">
-                                    <span class="item-numero">Nº ${item.codigo}</span>
-                                    <h3 class="item-nome">${item.nome}</h3>
-                                    <span class="status-badge">● DISPONÍVEL</span>
-                                    <button class="btn-reservar" onclick="location.href='reserva.html?item=${item.codigo}'">Solicitar Retirada</button>
-                                    ${btnExcluir}
-                                </div>
+                    const card = `
+                        <div class="card-item" data-nome="${item.nome}" id="card-${item.codigo}">
+                            <img src="${item.foto}" class="item-img" onerror="this.src='https://via.placeholder.com/400x180'">
+                            <div class="item-info">
+                                <span class="item-numero">Nº ${item.codigo}</span>
+                                <h3 class="item-nome">${item.nome}</h3>
+                                <button class="btn-reservar" onclick="location.href='reserva.html?item=${encodeURIComponent(item.nome)}&codigo=${encodeURIComponent(item.codigo)}'">Solicitar Retirada</button>
+                                ${btnExcluir}
                             </div>
-                        `;
-                        grid.insertAdjacentHTML('beforeend', card);
-                    });
-                })
-                .catch(() => showToast("Erro ao carregar inventário.", "erro"));
-        }
+                        </div>
+                    `;
+                    grid.insertAdjacentHTML('beforeend', card);
+                });
+            })
+            .catch(() => showToast("Erro ao carregar inventário.", "erro"));
+    }
 
         // ========================== GESTÃO DE MATERIAIS ==========================
         function abrirModalAdd() { document.getElementById('modalAdd').style.display = 'flex'; }

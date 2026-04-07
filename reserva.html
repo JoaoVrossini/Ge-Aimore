@@ -17,149 +17,70 @@
     </script>
 
     <style>
-        /* DESIGN SYSTEM GLOBAL */
         :root {
-            --bg-fundo: #050a1f;
-            --bg-card: #0e1633;
-            --bg-header: #0e1633;
-            --bg-input: #1a244d;
-            --azul-aimore: #1a2857;
-            --amarelo-corda: #ffde00;
-            --branco: #ffffff;
-            --texto-principal: #ffffff;
-            --texto-apoio: #a0aec0;
-            --sucesso: #118742;
-            --erro: #e74c3c;
-            --aviso: #f39c12;
-            --borda: rgba(255, 255, 255, 0.05);
-            --sombra: 0 10px 30px rgba(0,0,0,0.5);
-            
-            /* Variáveis pro Calendário no Modo Escuro */
-            --cal-bg: #0e1633;
-            --cal-text: #ffffff;
-            --cal-hover: #1a244d;
+            --bg-fundo: #050a1f; --bg-card: #0e1633; --bg-header: #0e1633; --bg-input: #1a244d;
+            --amarelo-corda: #ffde00; --texto-principal: #ffffff; --texto-apoio: #a0aec0;
+            --sucesso: #2ecc71; --erro: #ff4d4d; --aviso: #f39c12; --borda: rgba(255, 255, 255, 0.05);
+            --cal-bg: #0e1633; --cal-text: #ffffff; --cal-hover: #1a244d;
         }
-
         html.light-mode {
-            --bg-fundo: #f4f6f8;
-            --bg-card: #ffffff;
-            --bg-header: #ffffff;
-            --bg-input: #f0f2f5;
-            --texto-principal: #1a2857;
-            --texto-apoio: #4a5568;
-            --borda: rgba(26, 40, 87, 0.1);
-            --sombra: 0 4px 15px rgba(26, 40, 87, 0.1);
-            
-            /* Variáveis pro Calendário no Modo Claro */
-            --cal-bg: #ffffff;
-            --cal-text: #1a2857;
-            --cal-hover: #f0f2f5;
+            --bg-fundo: #f4f6f8; --bg-card: #ffffff; --bg-header: #ffffff; --bg-input: #f0f2f5;
+            --texto-principal: #1a2857; --texto-apoio: #4a5568; --borda: rgba(26, 40, 87, 0.1);
+            --cal-bg: #ffffff; --cal-text: #1a2857; --cal-hover: #f0f2f5;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
-        
-        body { 
-            background-color: var(--bg-fundo); 
-            color: var(--texto-principal); 
-            height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            transition: background-color 0.3s ease;
-        }
-
-        /* HEADER */
-        header { 
-            background: var(--bg-header); 
-            padding: 15px 20px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between;
-            border-bottom: 2px solid var(--amarelo-corda); 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
-            transition: background-color 0.3s ease;
-        }
-        
+        body { background-color: var(--bg-fundo); color: var(--texto-principal); height: 100vh; display: flex; flex-direction: column; transition: background-color 0.3s ease; }
+        header { background: var(--bg-header); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--amarelo-corda); }
         .header-left { display: flex; align-items: center; gap: 15px; }
-        .btn-voltar { background: transparent; border: 1px solid var(--texto-apoio); color: var(--texto-apoio); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; text-decoration: none; transition: 0.3s; }
-        .btn-voltar:hover { border-color: var(--amarelo-corda); color: var(--amarelo-corda); }
-        .header-title { font-size: 1.1rem; font-weight: 600; color: var(--texto-principal); }
-        
-        .btn-theme { background: transparent; border: 1px solid var(--texto-apoio); color: var(--texto-apoio); border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; }
-        .btn-theme:hover { border-color: var(--amarelo-corda); color: var(--amarelo-corda); }
-
-        /* HERO DO ITEM */
+        .btn-voltar { background: transparent; border: 1px solid var(--texto-apoio); color: var(--texto-apoio); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; text-decoration: none; }
+        .header-title { font-size: 1.1rem; font-weight: 600; }
+        .btn-theme { background: transparent; border: 1px solid var(--texto-apoio); border-radius: 50%; width: 35px; height: 35px; cursor: pointer; }
         .item-hero { text-align: center; padding: 30px 20px; }
-        .item-hero h2 { font-size: 1.6rem; color: var(--texto-principal); margin-bottom: 5px; font-weight: 700; }
+        .item-hero h2 { font-size: 1.6rem; margin-bottom: 5px; font-weight: 700; }
         .item-hero p { color: var(--amarelo-corda); font-size: 0.9rem; font-weight: 600; text-transform: uppercase; }
-
-        /* PAINEL DE RESERVA */
-        .painel-reserva { 
-            background: var(--bg-card); 
-            flex-grow: 1; 
-            border-radius: 30px 30px 0 0; 
-            padding: 40px 30px; 
-            box-shadow: 0 -5px 25px rgba(0,0,0,0.1); 
-            display: flex; 
-            flex-direction: column; 
-            transition: background-color 0.3s ease;
-        }
-        
+        .painel-reserva { background: var(--bg-card); flex-grow: 1; border-radius: 30px 30px 0 0; padding: 40px 30px; display: flex; flex-direction: column; }
         .form-container { max-width: 500px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; flex-grow: 1; }
-
-        .input-group { margin-bottom: 25px; }
+        .input-group { margin-bottom: 20px; }
         .input-group label { display: block; font-size: 0.9rem; color: var(--texto-apoio); margin-bottom: 10px; font-weight: 600; }
-        .input-group input { 
-            width: 100%; 
-            padding: 16px; 
-            border-radius: 12px; 
-            border: 2px solid var(--borda); 
-            background: var(--bg-input); 
-            color: var(--texto-principal); 
-            outline: none; 
-            font-size: 1rem; 
-            transition: 0.3s; 
-            cursor: pointer; 
-        }
-        .input-group input:focus { border-color: var(--amarelo-corda); }
-        .input-group input:disabled { opacity: 0.5; cursor: not-allowed; }
+        .input-group input { width: 100%; padding: 16px; border-radius: 12px; border: 2px solid var(--borda); background: var(--bg-input); color: var(--texto-principal); outline: none; }
+        
+        .resumo-datas { background: rgba(255, 222, 0, 0.05); border: 1px dashed var(--amarelo-corda); border-radius: 12px; padding: 15px; margin-bottom: 25px; }
+        .resumo-datas p { font-size: 0.85rem; color: var(--texto-principal); margin-bottom: 5px; }
+        .resumo-datas strong { color: var(--amarelo-corda); }
 
-        .btn-confirmar { 
-            width: 100%; 
-            padding: 18px; 
-            border: none; 
-            border-radius: 12px; 
-            background: var(--amarelo-corda); 
-            color: #1a2857; 
-            font-weight: 700; 
-            font-size: 1.1rem; 
-            cursor: pointer; 
-            transition: 0.3s; 
-            margin-top: auto; 
-            box-shadow: 0 4px 15px rgba(255, 222, 0, 0.2);
-        }
-        .btn-confirmar:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 222, 0, 0.3); }
-        .btn-confirmar:disabled { background: var(--bg-input); color: var(--texto-apoio); cursor: not-allowed; box-shadow: none; transform: none; }
+        .btn-confirmar { width: 100%; padding: 18px; border: none; border-radius: 12px; background: var(--amarelo-corda); color: #1a2857; font-weight: 700; font-size: 1.1rem; cursor: pointer; margin-top: auto; }
+        .btn-confirmar:disabled { background: var(--bg-input); color: var(--texto-apoio); }
 
-        /* SOBRESCRITA DO FLATPICKR PARA ACOMPANHAR O TEMA */
-        .flatpickr-calendar { background: var(--cal-bg) !important; border: 1px solid var(--borda) !important; box-shadow: var(--sombra) !important; }
-        .flatpickr-month, .flatpickr-current-month .flatpickr-monthDropdown-months, .flatpickr-current-month input.cur-year, .flatpickr-weekday { color: var(--cal-text) !important; fill: var(--cal-text) !important; }
-        .flatpickr-day { color: var(--cal-text) !important; }
-        .flatpickr-day:hover { background: var(--cal-hover) !important; border-color: var(--cal-hover) !important; }
+        /* --- ESTILIZAÇÃO DO CALENDÁRIO --- */
+        .flatpickr-calendar { background: var(--cal-bg) !important; color: var(--cal-text) !important; box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important; }
+        .flatpickr-day { color: var(--cal-text) !important; border-radius: 8px !important; transition: 0.2s; }
+        
+        /* DIAS LIVRES (VERDES) */
+        .flatpickr-day:not(.flatpickr-disabled):not(.today):not(.selected) { 
+            background: rgba(46, 204, 113, 0.15) !important; 
+            color: var(--sucesso) !important; 
+            border: 1px solid rgba(46, 204, 113, 0.3) !important;
+        }
+
+        /* DIAS OCUPADOS/DESATIVADOS (VERMELHOS) */
+        .flatpickr-day.flatpickr-disabled, 
+        .flatpickr-day.flatpickr-disabled:hover { 
+            background: rgba(255, 77, 77, 0.15) !important; 
+            color: var(--erro) !important; 
+            cursor: not-allowed !important;
+            text-decoration: line-through;
+            border: 1px solid rgba(255, 77, 77, 0.3) !important;
+        }
+
+        /* DIA SELECIONADO */
         .flatpickr-day.selected { background: var(--amarelo-corda) !important; border-color: var(--amarelo-corda) !important; color: #1a2857 !important; font-weight: bold; }
         
-        /* Cores Personalizadas para Datas Disponíveis/Indisponíveis */
-        .flatpickr-day:not(.flatpickr-disabled):not(.today):not(.selected) { background: rgba(17, 135, 66, 0.1); border-color: transparent; color: var(--sucesso) !important; font-weight: 600; }
-        .flatpickr-day.flatpickr-disabled { background: rgba(231, 76, 60, 0.1) !important; color: var(--erro) !important; text-decoration: line-through; opacity: 0.8; }
-
-        /* TOASTS */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { padding: 15px 20px; border-radius: 10px; color: white; font-weight: 600; box-shadow: 0 5px 15px rgba(0,0,0,0.4); transform: translateX(120%); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px; }
+        .toast { padding: 15px 20px; border-radius: 10px; color: white; font-weight: 600; transform: translateX(120%); transition: 0.3s; display: flex; align-items: center; gap: 10px; }
     </style>
 </head>
 <body>
-
     <div id="toast-container"></div>
-
     <header>
         <div class="header-left">
             <a href="inventario.html" class="btn-voltar">❮</a>
@@ -170,38 +91,33 @@
 
     <div class="item-hero">
         <h2 id="nome-item">Carregando Material...</h2>
-        <p id="codigo-item">Verificando calendário no servidor...</p>
+        <p id="codigo-item">Verificando calendário...</p>
     </div>
 
     <div class="painel-reserva">
         <form class="form-container" onsubmit="confirmarReserva(event)">
             <div class="input-group">
-                <label>Data de Retirada (Selecione)</label>
-                <input type="text" id="data-retirada" placeholder="Toque para abrir o calendário" required disabled>
+                <label>Data de Retirada</label>
+                <input type="text" id="data-retirada" placeholder="Selecione no calendário" required disabled>
             </div>
             <div class="input-group">
-                <label>Data de Devolução (Selecione)</label>
-                <input type="text" id="data-devolucao" placeholder="Toque para abrir o calendário" required disabled>
+                <label>Data de Devolução</label>
+                <input type="text" id="data-devolucao" placeholder="Selecione no calendário" required disabled>
             </div>
-            <button type="submit" class="btn-confirmar" id="btn-submit" disabled>Aguarde a verificação...</button>
+
+            <button type="submit" class="btn-confirmar" id="btn-submit" disabled>Aguarde...</button>
         </form>
     </div>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzwr5mH4kBpnSbvPAgTjHAC0MPAnejpGlIhOSDiCZrOiFq1GmVCR-Sw8prP7EXYx_o/exec';
-        const codigoAtual = new URLSearchParams(window.location.search).get('item');
-
-        // GESTÃO DE TEMAS
-        if (document.documentElement.classList.contains('light-mode')) {
-            document.getElementById('theme-btn').innerText = '🌙';
-        } else {
-            document.getElementById('theme-btn').innerText = '☀️';
-        }
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbytpxBSDoisT16SF7gNkkeFII2fyd9-KOHRoL5jCeIMG7CndEXztXSXsJCwhqzUNw/exec';
+        const params = new URLSearchParams(window.location.search);
+        const nomeItemURL = params.get('item'); 
+        const codigoAtual = params.get('codigo'); 
 
         function toggleTheme() {
             const html = document.documentElement;
             const btn = document.getElementById('theme-btn');
-            
             if (html.classList.contains('light-mode')) {
                 html.classList.remove('light-mode');
                 btn.innerText = '☀️';
@@ -213,26 +129,26 @@
             }
         }
 
-        // SISTEMA DE TOASTS
+        function formatarDataBR(dataISO) {
+            if (!dataISO) return "--/--/----";
+            const [ano, mes, dia] = dataISO.split("-");
+            return `${dia}/${mes}/${ano}`;
+        }
+
         function showToast(msg, tipo = 'sucesso') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            const cores = { sucesso: 'var(--sucesso)', erro: 'var(--erro)', aviso: 'var(--aviso)' };
-            const icones = { sucesso: '✅', erro: '❌', aviso: '⚠️' };
-            
             toast.className = 'toast';
-            toast.style.background = cores[tipo];
-            toast.innerHTML = `<span>${icones[tipo]}</span> ${msg}`;
+            toast.style.background = tipo === 'sucesso' ? 'var(--sucesso)' : 'var(--erro)';
+            toast.innerHTML = msg;
             container.appendChild(toast);
             setTimeout(() => toast.style.transform = 'translateX(0)', 10);
-            setTimeout(() => { toast.style.transform = 'translateX(130%)'; setTimeout(() => toast.remove(), 300); }, 3500);
+            setTimeout(() => { toast.style.transform = 'translateX(130%)'; toast.remove(); }, 3500);
         }
 
-        // INICIALIZAÇÃO DA PÁGINA
         document.addEventListener('DOMContentLoaded', () => {
-            if (!localStorage.getItem('userRole')) { window.location.href = 'index.html'; return; }
-            if (!codigoAtual) { showToast("Item não especificado.", "erro"); setTimeout(() => window.location.href = 'inventario.html', 2000); return; }
-            
+            if (!codigoAtual) { window.location.href = 'inventario.html'; return; }
+            document.getElementById('nome-item').innerText = nomeItemURL || "Material Selecionado";
             document.getElementById('codigo-item').innerText = `Item Nº ${codigoAtual}`;
             carregarReservasDoItem();
         });
@@ -241,76 +157,65 @@
             fetch(`${scriptURL}?action=get_reservas&codigo=${codigoAtual}`)
                 .then(res => res.json())
                 .then(data => {
-                    // Opcional: Se quiser buscar o nome exato do item, você pode ajustar a API no Apps Script depois,
-                    // mas por enquanto mantemos "Material Selecionado" para ficar rápido.
-                    document.getElementById('nome-item').innerText = `Material Selecionado`;
-                    
                     const datasBloqueadas = data.map(res => ({
-                        from: res.retirada.split('T')[0],
-                        to: res.devolucao.split('T')[0]
+                        from: res.retirada.split('T')[0], to: res.devolucao.split('T')[0]
                     }));
-
                     iniciarCalendarios(datasBloqueadas);
-
                     document.getElementById('data-retirada').disabled = false;
                     document.getElementById('data-devolucao').disabled = false;
                     document.getElementById('btn-submit').innerText = "Confirmar Solicitação";
                     document.getElementById('btn-submit').disabled = false;
-                    document.getElementById('codigo-item').innerText = `Item Nº ${codigoAtual} • Calendário Livre`;
-                })
-                .catch(() => showToast("Erro ao sincronizar calendário com o servidor.", "erro"));
+                });
         }
 
         function iniciarCalendarios(datasBloqueadas) {
-            const config = {
-                locale: "pt",
-                dateFormat: "Y-m-d",
+            const config = { 
+                locale: "pt", 
+                dateFormat: "Y-m-d", 
                 minDate: "today", 
                 disable: datasBloqueadas,
-                disableMobile: "true" // Força o layout customizado no mobile em vez da interface nativa feia
+                disableMobile: "true", // Garante que use o layout customizado com cores no celular
+                onChange: function(selectedDates, dateStr, instance) {
+                    if (instance.element.id === "data-retirada") {
+                        document.getElementById("resumo-inicio").innerText = formatarDataBR(dateStr);
+                    } else {
+                        document.getElementById("resumo-fim").innerText = formatarDataBR(dateStr);
+                    }
+                }
             };
+            
+            const pRet = flatpickr("#data-retirada", config);
+            const pDev = flatpickr("#data-devolucao", config);
 
-            const pickerRetirada = flatpickr("#data-retirada", config);
-            const pickerDevolucao = flatpickr("#data-devolucao", config);
-
-            // Garante que não se pode devolver antes de pegar
-            document.getElementById("data-retirada").addEventListener("change", function(e) {
-                pickerDevolucao.set("minDate", e.target.value);
+            document.getElementById("data-retirada").addEventListener("change", (e) => {
+                pDev.set("minDate", e.target.value);
             });
         }
 
         function confirmarReserva(e) {
             e.preventDefault();
-            const retirada = document.getElementById('data-retirada').value;
-            const devolucao = document.getElementById('data-devolucao').value;
-            
-            if(!retirada || !devolucao) return showToast("Por favor, selecione as datas de retirada e devolução.", "aviso");
-
             const btn = document.getElementById('btn-submit');
-            btn.innerText = "Registrando Reserva..."; btn.disabled = true;
+            btn.innerText = "Registrando..."; btn.disabled = true;
 
             const payload = {
                 action: 'reservar', 
                 codigo: codigoAtual,
                 usuario: localStorage.getItem('userName'), 
-                retirada: retirada, 
-                devolucao: devolucao
+                retirada: document.getElementById('data-retirada').value, 
+                devolucao: document.getElementById('data-devolucao').value
             };
 
             fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) })
             .then(res => res.json())
             .then(data => {
                 if(data.status === 'sucesso'){
-                    showToast("Reserva efetuada com sucesso!", "sucesso");
+                    showToast("Reserva efetuada!");
                     setTimeout(() => window.location.href = 'inventario.html', 1500);
                 } else {
                     showToast(data.detalhe, "erro");
-                    btn.innerText = "Confirmar Solicitação"; btn.disabled = false;
+                    btn.innerText = "Confirmar Solicitação";
+                    btn.disabled = false;
                 }
-            })
-            .catch(() => { 
-                showToast("Erro na conexão com o banco de dados.", "erro"); 
-                btn.innerText = "Confirmar Solicitação"; btn.disabled = false; 
             });
         }
     </script>
