@@ -5,5 +5,5 @@ services:
     container_name: portal-aimore
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.aimore.rule=Host(`aimore.SEU-IP.sslip.io`)"
+      - "traefik.http.routers.aimore.rule=Host(`aimore.72.61.38.132.sslip.io`)"
       - "traefik.http.services.aimore.loadbalancer.server.port=80"
