@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  site-aimore:
+    build: .
+    ports:
+      - "80:80"
+    restart: always
