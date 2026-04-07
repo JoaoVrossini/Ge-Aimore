@@ -2,6 +2,6 @@ services:
   site-aimore:
     build: .
     # Remova ou comente a seção 'ports' abaixo
-    # ports:
-    #   - "80:80"
+     ports:
+       - "80:80"
     restart: always
