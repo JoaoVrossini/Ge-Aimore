@@ -121,10 +121,6 @@
         .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 222, 0, 0.3); }
         .btn-submit:disabled { background: #555; color: #888; cursor: not-allowed; transform: none; }
 
-        .toggle-text { margin-top: 25px; text-align: center; font-size: 0.85rem; color: var(--texto-apoio); }
-        .toggle-text a { color: var(--amarelo-corda); cursor: pointer; text-decoration: none; font-weight: 700; margin-left: 5px; }
-        .toggle-text a:hover { text-decoration: underline; }
-
         .form-section { display: none; }
         .form-section.active { display: block; animation: slideUp 0.4s ease; }
 
@@ -170,44 +166,29 @@
                 </div>
                 <button type="submit" class="btn-submit" id="btn-login">Entrar no Portal</button>
             </form>
-            <div class="toggle-text">
-                Novo na tropa? <a onclick="alternarTela('view-register')">Criar Conta</a>
-            </div>
         </div>
 
-        <div id="view-register" class="form-section">
-            <form onsubmit="criarConta(event)">
+        <div id="view-force-pwd" class="form-section">
+            <form onsubmit="salvarNovaSenha(event)">
+                <p style="color: var(--aviso); font-size: 0.9rem; margin-bottom: 20px; font-weight: 600;">
+                    Este é o seu primeiro acesso. Por segurança, crie uma nova senha.
+                </p>
                 <div class="input-group">
-                    <label>Registro Escoteiro (sem dígito)</label>
-                    <input type="text" id="reg-registro" maxlength="8" pattern="\d{1,8}" placeholder="Até 8 números" required>
+                    <label>Nova Senha (Mínimo 6 caracteres)</label>
+                    <input type="password" id="nova-senha" minlength="6" required>
                 </div>
-                
                 <div class="input-group">
-                    <label>Email Oficial</label>
-                    <input type="email" id="reg-email" placeholder="seu@email.com" required>
+                    <label>Confirmar Nova Senha</label>
+                    <input type="password" id="nova-senha-conf" minlength="6" required>
                 </div>
-
-                <div style="display: flex; gap: 12px;">
-                    <div class="input-group" style="flex: 1;">
-                        <label>Senha</label>
-                        <input type="password" id="reg-senha" required>
-                    </div>
-                    <div class="input-group" style="flex: 1;">
-                        <label>Confirmar</label>
-                        <input type="password" id="reg-senha-conf" required>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-submit" id="btn-registrar">Cadastrar Membro</button>
+                <button type="submit" class="btn-submit" id="btn-salvar-senha">Atualizar e Entrar</button>
             </form>
-            <div class="toggle-text">
-                Já possui acesso? <a onclick="alternarTela('view-login')">Fazer Login</a>
-            </div>
         </div>
     </div>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzNArci0LKqRf7xfGpaQasDdwUgzZsMCkinTYrXjgsqGRDrfV-gZf9WirBDx4c-5yY/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbz-HPqOljfPHzDgfD1weR-zCqIobb7hGWoGnq3oM0PLV0FzRA6SZLs3VbxyPF6BCTI/exec';
+        let registroTemporario = null; 
 
         // GESTÃO DE TEMAS
         function toggleTheme() {
@@ -224,21 +205,15 @@
             }
         }
 
-        // CARREGAR TEMA SALVO
         if (localStorage.getItem('aimore-theme') === 'light') {
             document.body.classList.add('light-mode');
             document.getElementById('theme-btn').innerText = '☀️';
         }
 
-        // NOTIFICAÇÕES TOAST
         function showToast(msg, tipo = 'sucesso') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            const cores = { 
-                sucesso: 'var(--sucesso)', 
-                erro: 'var(--erro)', 
-                aviso: 'var(--aviso)' 
-            };
+            const cores = { sucesso: 'var(--sucesso)', erro: 'var(--erro)', aviso: 'var(--aviso)' };
             const icones = { sucesso: '✅', erro: '❌', aviso: '⚠️' };
             
             toast.className = 'toast';
@@ -273,41 +248,48 @@
             .then(res => res.json())
             .then(data => {
                 if (data.status === 'sucesso') {
-                    localStorage.setItem('userRole', data.role);
-                    localStorage.setItem('userName', user); 
-                    window.location.href = 'hub.html';
+                    // Verifica se é o primeiro login comparando senha = registro
+                    // (Opcional: Você pode checar o data.firstLogin caso configure no Backend depois)
+                    if (data.firstLogin === true || pass === user) {
+                        registroTemporario = user;
+                        alternarTela('view-force-pwd');
+                        showToast("Crie uma nova senha para continuar.", 'aviso');
+                    } else {
+                        localStorage.setItem('userRole', data.role);
+                        localStorage.setItem('userName', user); 
+                        window.location.href = 'hub.html';
+                    }
                 } else { showToast(data.detalhe, 'erro'); }
             })
             .catch(() => showToast("Falha na conexão com o servidor.", 'erro'))
             .finally(() => { btn.innerText = "Entrar no Portal"; btn.disabled = false; });
         }
 
-        function criarConta(e) {
+        function salvarNovaSenha(e) {
             e.preventDefault();
-            const registro = document.getElementById('reg-registro').value;
-            const email = document.getElementById('reg-email').value;
-            const senha = document.getElementById('reg-senha').value;
-            const senhaConf = document.getElementById('reg-senha-conf').value;
+            const novaSenha = document.getElementById('nova-senha').value;
+            const confSenha = document.getElementById('nova-senha-conf').value;
+            const btn = document.getElementById('btn-salvar-senha');
 
-            if (senha !== senhaConf) return showToast("As senhas não conferem.", 'aviso');
-            if (senha.length < 6) return showToast("Senha muito curta (mín. 6).", 'aviso');
+            if (novaSenha !== confSenha) return showToast("As senhas não conferem.", 'aviso');
+            if (novaSenha === registroTemporario) return showToast("A nova senha não pode ser igual ao registro.", 'erro');
 
-            const btn = document.getElementById('btn-registrar');
-            btn.innerText = "Processando..."; btn.disabled = true;
+            btn.innerText = "Atualizando..."; btn.disabled = true;
 
             fetch(scriptURL, { 
                 method: 'POST', 
-                body: JSON.stringify({action: 'register_user', registro: registro, email: email, senha: senha}) 
+                body: JSON.stringify({action: 'update_password', registro: registroTemporario, novaSenha: novaSenha}) 
             })
             .then(res => res.json())
             .then(data => {
                 if (data.status === 'sucesso') {
-                    showToast("Conta criada com sucesso!", 'sucesso');
-                    alternarTela('view-login');
-                } else { showToast(data.detalhe, 'erro'); }
+                    showToast("Senha atualizada! Redirecionando...", 'sucesso');
+                    localStorage.setItem('userRole', data.role);
+                    localStorage.setItem('userName', registroTemporario);
+                    setTimeout(() => { window.location.href = 'hub.html'; }, 1500);
+                } else { showToast(data.detalhe, 'erro'); btn.innerText = "Atualizar e Entrar"; btn.disabled = false; }
             })
-            .catch(() => showToast("Erro ao criar conta.", 'erro'))
-            .finally(() => { btn.innerText = "Cadastrar Membro"; btn.disabled = false; });
+            .catch(() => { showToast("Erro ao atualizar senha.", 'erro'); btn.innerText = "Atualizar e Entrar"; btn.disabled = false; });
         }
     </script>
 </body>

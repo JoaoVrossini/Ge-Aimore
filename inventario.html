@@ -72,6 +72,25 @@
             transition: background-color 0.3s ease;
         }
         
+        /* BOTÃO VOLTAR */
+        .btn-voltar { 
+            background: transparent; 
+            border: 1px solid var(--texto-apoio); 
+            color: var(--texto-apoio); 
+            width: 42px; 
+            height: 42px; 
+            border-radius: 10px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.2rem; 
+            cursor: pointer; 
+            text-decoration: none; 
+            transition: 0.3s; 
+            flex-shrink: 0; 
+        }
+        .btn-voltar:hover { border-color: var(--amarelo-corda); color: var(--amarelo-corda); }
+
         header input { 
             flex: 1; 
             padding: 12px 15px; 
@@ -84,7 +103,7 @@
         }
         header input:focus { border-color: var(--amarelo-corda); }
 
-        .btn-gerenciar, .btn-theme { 
+        .btn-theme { 
             background: transparent; 
             border: 1px solid var(--texto-apoio); 
             color: var(--texto-apoio); 
@@ -96,8 +115,7 @@
             justify-content: center;
             transition: 0.3s;
         }
-        .btn-gerenciar { display: none; } /* Só aparece para admin */
-        .btn-gerenciar:hover, .btn-theme:hover { border-color: var(--amarelo-corda); color: var(--amarelo-corda); }
+        .btn-theme:hover { border-color: var(--amarelo-corda); color: var(--amarelo-corda); }
         
         /* CONTEÚDO */
         .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
@@ -208,12 +226,6 @@
         }
         .input-group input[type="file"] { padding: 10px; }
         
-        /* LISTA E PESQUISA NO MODAL DE USUÁRIOS */
-        .search-users-input { margin-bottom: 20px; width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--borda); background: var(--bg-input); color: var(--texto-principal); outline: none; transition: 0.3s; }
-        .search-users-input:focus { border-color: var(--amarelo-corda); }
-
-        .user-list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--borda); }
-        
         .btn-salvar-modal { width: 100%; padding: 14px; background: var(--amarelo-corda); color: #1a2857; font-weight: 700; border: none; border-radius: 10px; cursor: pointer; margin-top: 15px; font-size: 1rem; }
         .btn-cancelar-modal { width: 100%; padding: 14px; background: transparent; color: var(--texto-apoio); border: 1px solid var(--texto-apoio); border-radius: 10px; cursor: pointer; margin-top: 10px; font-weight: 600; }
 
@@ -233,9 +245,9 @@
     <div id="toast-container"></div>
 
     <header>
+        <a href="hub.html" class="btn-voltar" title="Voltar ao Painel">❮</a>
         <input type="text" id="busca" placeholder="🔍 Pesquisar material..." onkeyup="filtrarMateriais()">
         <button class="btn-theme" id="theme-btn" onclick="toggleTheme()">☀️</button>
-        <button class="btn-gerenciar" id="btnAdmin" onclick="abrirModalUsers()" title="Gerenciar Tropa">⚙️</button>
     </header>
 
     <main class="container">
@@ -264,26 +276,13 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="modalUsers">
-        <div class="modal-box">
-            <h3>Gerenciar Tropa</h3>
-            <p style="font-size: 0.8rem; color: var(--texto-apoio); margin-bottom: 20px;">Altere os níveis de permissão dos membros da tropa.</p>
-            
-            <input type="text" id="buscaUsuario" class="search-users-input" placeholder="🔍 Buscar por registro ou email..." onkeyup="filtrarUsuarios()">
-
-            <div id="lista-usuarios">Carregando membros...</div>
-            <button type="button" class="btn-cancelar-modal" style="margin-top: 20px;" onclick="document.getElementById('modalUsers').style.display='none'">Fechar Painel</button>
-        </div>
-    </div>
-
     <nav class="nav-mobile">
         <a href="inventario.html" class="nav-item active"><span>📦</span>Itens</a>
         <a href="minhas_reservas.html" class="nav-item"><span>📅</span>Reservas</a>
-        <a href="hub.html" class="nav-item"><span>🏠</span>Início</a>
     </nav>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzNArci0LKqRf7xfGpaQasDdwUgzZsMCkinTYrXjgsqGRDrfV-gZf9WirBDx4c-5yY/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbz-HPqOljfPHzDgfD1weR-zCqIobb7hGWoGnq3oM0PLV0FzRA6SZLs3VbxyPF6BCTI/exec';
         const role = localStorage.getItem('userRole'); 
 
         // GESTÃO DE TEMAS
@@ -326,10 +325,7 @@
             if (!role) { window.location.href = 'index.html'; return; }
 
             // Lógica de Permissões Visuais
-            if (role === 'admin') {
-                document.getElementById('btnAdicionar').style.display = 'flex';
-                document.getElementById('btnAdmin').style.display = 'flex';
-            } else if (role === 'patrimonio') {
+            if (role === 'admin' || role === 'patrimonio') {
                 document.getElementById('btnAdicionar').style.display = 'flex';
             }
             carregarMateriais();
@@ -418,62 +414,6 @@
             for (let i = 0; i < cards.length; i++) {
                 cards[i].style.display = cards[i].getAttribute('data-nome').toLowerCase().includes(input) ? "" : "none";
             }
-        }
-
-        // ========================== GESTÃO DE USUÁRIOS ==========================
-        function abrirModalUsers() {
-            document.getElementById('modalUsers').style.display = 'flex';
-            document.getElementById('buscaUsuario').value = ''; // Limpa a busca ao abrir
-            const lista = document.getElementById('lista-usuarios');
-            lista.innerHTML = '<p style="color: var(--amarelo-corda);">Buscando membros...</p>';
-            
-            fetch(`${scriptURL}?action=get_users`)
-            .then(res => res.json())
-            .then(users => {
-                lista.innerHTML = '';
-                users.forEach(u => {
-                    const div = document.createElement('div');
-                    div.className = 'user-list-item';
-                    // Adiciona os atributos de busca
-                    div.setAttribute('data-busca', `${u.registro} ${u.email}`.toLowerCase());
-                    
-                    div.innerHTML = `
-                        <div style="line-height: 1.2;">
-                            <strong style="color: var(--texto-principal);">${u.registro}</strong><br>
-                            <span style="font-size:0.75rem; color: var(--texto-apoio);">${u.email}</span>
-                        </div>
-                        <select onchange="mudarCargo('${u.registro}', this.value)" style="width: 140px; padding: 8px; border-radius: 8px; background: var(--bg-input); color: var(--texto-principal); border: 1px solid var(--borda);">
-                            <option value="user" ${u.role === 'user' ? 'selected' : ''}>Escoteiro</option>
-                            <option value="patrimonio" ${u.role === 'patrimonio' ? 'selected' : ''}>Patrimônio</option>
-                            <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
-                        </select>
-                    `;
-                    lista.appendChild(div);
-                });
-            })
-            .catch(() => lista.innerHTML = '<p style="color: var(--erro);">Erro ao carregar lista.</p>');
-        }
-
-        function filtrarUsuarios() {
-            let input = document.getElementById('buscaUsuario').value.toLowerCase();
-            let items = document.getElementsByClassName('user-list-item');
-            
-            for (let i = 0; i < items.length; i++) {
-                let texto = items[i].getAttribute('data-busca');
-                // Alterna entre display original (flex) e esconder
-                items[i].style.display = texto.includes(input) ? "flex" : "none";
-            }
-        }
-
-        function mudarCargo(registroTarget, novoCargo) {
-            showToast("Alterando cargo...", "aviso");
-            fetch(scriptURL, { method: 'POST', body: JSON.stringify({action: 'change_role', targetRegistro: registroTarget, newRole: novoCargo}) })
-            .then(res => res.json())
-            .then(data => {
-                if(data.status === 'sucesso') showToast(`Cargo de ${registroTarget} atualizado!`, "sucesso");
-                else showToast(data.detalhe, "erro");
-            })
-            .catch(() => showToast("Erro de conexão.", "erro"));
         }
     </script>
 </body>

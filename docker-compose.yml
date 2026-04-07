@@ -1,7 +1,7 @@
+version: '3.8'
 services:
   site-aimore:
     build: .
-    restart: always
-    container_name: portal-aimore
     ports:
-      - "8080:80"
+      - "80:80"
+    restart: always

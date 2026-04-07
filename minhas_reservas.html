@@ -51,7 +51,7 @@
             transition: background-color 0.3s ease;
         }
 
-        /* HEADER */
+        /* HEADER E BUSCA */
         header { 
             background: var(--bg-header); 
             padding: 15px 20px; 
@@ -59,17 +59,57 @@
             top: 0; 
             z-index: 100; 
             display: flex; 
+            gap: 10px;
             align-items: center; 
-            justify-content: space-between;
             border-bottom: 2px solid var(--amarelo-corda); 
             box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
             transition: background-color 0.3s ease;
         }
         
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .header-title { font-size: 1.1rem; font-weight: 700; color: var(--texto-principal); }
-        
-        .btn-theme { background: transparent; border: 1px solid var(--texto-apoio); color: var(--texto-apoio); border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; }
+        .btn-voltar { 
+            background: transparent; 
+            border: 1px solid var(--texto-apoio); 
+            color: var(--texto-apoio); 
+            width: 42px; 
+            height: 42px; 
+            border-radius: 10px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.2rem; 
+            cursor: pointer; 
+            text-decoration: none; 
+            transition: 0.3s; 
+            flex-shrink: 0; 
+        }
+        .btn-voltar:hover { border-color: var(--amarelo-corda); color: var(--amarelo-corda); }
+
+        header input { 
+            flex: 1; 
+            padding: 12px 15px; 
+            border-radius: 10px; 
+            border: 1px solid var(--borda); 
+            background: var(--bg-input); 
+            color: var(--texto-principal); 
+            outline: none; 
+            transition: 0.3s;
+        }
+        header input:focus { border-color: var(--amarelo-corda); }
+
+        .btn-theme { 
+            background: transparent; 
+            border: 1px solid var(--texto-apoio); 
+            color: var(--texto-apoio); 
+            border-radius: 10px; 
+            width: 42px; 
+            height: 42px; 
+            cursor: pointer; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            transition: 0.3s; 
+            flex-shrink: 0;
+        }
         .btn-theme:hover { border-color: var(--amarelo-corda); color: var(--amarelo-corda); }
 
         /* CONTEÚDO PRINCIPAL */
@@ -134,10 +174,9 @@
     <div id="toast-container"></div>
 
     <header>
-        <div class="header-left">
-            <span class="header-title">Minhas Reservas Ativas</span>
-        </div>
-        <button class="btn-theme" id="theme-btn" onclick="toggleTheme()">☀️</button>
+        <a href="hub.html" class="btn-voltar" title="Voltar ao Painel">❮</a>
+        <input type="text" id="busca" placeholder="🔍 Buscar nas reservas..." onkeyup="filtrarReservas()">
+        <button class="btn-theme" id="theme-btn" onclick="toggleTheme()" title="Alterar Tema">☀️</button>
     </header>
 
     <div class="container" id="lista-reservas">
@@ -147,11 +186,10 @@
     <nav class="nav-mobile">
         <a href="inventario.html" class="nav-item"><span>📦</span>Itens</a>
         <a href="minhas_reservas.html" class="nav-item active"><span>📅</span>Reservas</a>
-        <a href="hub.html" class="nav-item"><span>🏠</span>Início</a>
     </nav>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzNArci0LKqRf7xfGpaQasDdwUgzZsMCkinTYrXjgsqGRDrfV-gZf9WirBDx4c-5yY/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbz-HPqOljfPHzDgfD1weR-zCqIobb7hGWoGnq3oM0PLV0FzRA6SZLs3VbxyPF6BCTI/exec';
 
         // GESTÃO DE TEMAS
         if (document.documentElement.classList.contains('light-mode')) {
@@ -228,8 +266,11 @@
                         const dataDev = formatarDataPadraoBr(reserva.devolucao);
                         const urlDevolucao = `devolucao.html?item=${encodeURIComponent(reserva.nome)}&codigo=${encodeURIComponent(reserva.codigo)}`;
 
+                        // String com nome e código para funcionar na busca
+                        const textoBusca = `${reserva.nome} ${reserva.codigo}`.toLowerCase();
+
                         const card = `
-                            <div class="reserva-card">
+                            <div class="reserva-card" data-busca="${textoBusca}">
                                 <div class="reserva-header">
                                     <img src="${reserva.foto}" alt="${reserva.nome}" onerror="this.src='https://via.placeholder.com/70?text=Sem+Foto'">
                                     <div class="reserva-info">
@@ -251,6 +292,18 @@
                     container.innerHTML = '';
                     showToast("Erro de conexão ao buscar reservas.", "erro"); 
                 });
+        }
+
+        // FUNÇÃO DE FILTRO/PESQUISA (NOVA)
+        function filtrarReservas() {
+            let input = document.getElementById('busca').value.toLowerCase();
+            let cards = document.getElementsByClassName('reserva-card');
+            
+            for (let i = 0; i < cards.length; i++) {
+                let texto = cards[i].getAttribute('data-busca');
+                // Se o texto buscado existir no atributo data-busca, o card aparece (display flex), senão some (none)
+                cards[i].style.display = texto.includes(input) ? "flex" : "none";
+            }
         }
     </script>
 </body>
