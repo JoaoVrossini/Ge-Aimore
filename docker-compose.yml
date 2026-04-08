@@ -3,16 +3,25 @@ services:
     build: .
     restart: always
     container_name: portal-aimore
+    # IMPORTANTE: Remova qualquer seção 'ports' se ela ainda estiver lá
     networks:
       - dokploy-network 
     labels:
       - "traefik.enable=true"
-      # COLOQUE SEU DOMÍNIO ABAIXO (Ex: aimore.com.br)
+      
+      # Configuração do domínio (Principal e WWW)
       - "traefik.http.routers.site-aimore.rule=Host(`geaimore.com.br`) || Host(`www.geaimore.com.br`)"
+      
+      # Ativando HTTPS e Let's Encrypt
       - "traefik.http.routers.site-aimore.entrypoints=websecure"
       - "traefik.http.routers.site-aimore.tls=true"
       - "traefik.http.routers.site-aimore.tls.certresolver=letsencrypt"
-      # Porta interna do seu serviço (onde o site roda dentro do container)
+      
+      # Redirecionamento automático de HTTP para HTTPS
+      - "traefik.http.routers.site-aimore.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      
+      # Porta interna do container (ajuste se seu app não rodar na 80)
       - "traefik.http.services.site-aimore.loadbalancer.server.port=80"
 
 networks:
